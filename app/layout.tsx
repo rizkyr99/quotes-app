@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Noto_Serif } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 
@@ -10,6 +10,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+const andadaPro = Noto_Serif({
+  variable: '--font-andanda-pro',
   subsets: ['latin'],
 });
 
@@ -27,7 +32,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang='en'>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          className={`${geistSans.variable} ${geistMono.variable} ${andadaPro.variable} antialiased`}>
           {children}
         </body>
       </html>
