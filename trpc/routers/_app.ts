@@ -55,6 +55,28 @@ export const appRouter = createTRPCRouter({
         },
       });
     }),
+  getQuotes: baseProcedure.query(async ({ ctx }) => {
+    if (!ctx.auth.userId) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    return prisma.quote.findMany({
+      where: {
+        createdById: ctx.auth.userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        author: true, // if you want author name too
+        tags: {
+          include: {
+            tag: { select: { id: true, name: true } }, // <- important
+          },
+        },
+      },
+    });
+  }),
   createQuote: baseProcedure
     .input(createQuoteSchema)
     .mutation(async ({ ctx, input }) => {
