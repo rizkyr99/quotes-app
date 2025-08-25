@@ -9,7 +9,7 @@ const createAuthorSchema = z.object({
 });
 
 const createQuoteSchema = z.object({
-  text: z.string().min(5),
+  text: z.string().min(1, 'Text is required'),
   authorId: z.string().nullable().optional(),
   source: z.string().nullable().optional(),
   context: z.string().nullable().optional(),
@@ -68,10 +68,10 @@ export const appRouter = createTRPCRouter({
         createdAt: 'desc',
       },
       include: {
-        author: true, // if you want author name too
+        author: true,
         tags: {
           include: {
-            tag: { select: { id: true, name: true } }, // <- important
+            tag: { select: { id: true, name: true } },
           },
         },
       },
@@ -135,8 +135,6 @@ export const appRouter = createTRPCRouter({
           createdById: ctx.auth.userId,
         },
       });
-
-      return;
     }),
 });
 

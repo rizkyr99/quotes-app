@@ -64,6 +64,9 @@ const CreateQuoteModal = () => {
         setOpen(false);
         toast.success('Quote created');
       },
+      onError: () => {
+        toast.error('Failed to create quote');
+      },
     })
   );
 
