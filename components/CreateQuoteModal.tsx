@@ -24,7 +24,7 @@ import { Input } from './ui/input';
 import TagSelect from './TagSelect';
 import AuthorSelect from './AuthorSelect';
 import { Textarea } from './ui/textarea';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/client';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -56,10 +56,12 @@ const CreateQuoteModal = () => {
   });
 
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
   const createMutation = useMutation(
     trpc.createQuote.mutationOptions({
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: trpc.getQuotes.queryKey() });
         form.reset();
         setOpen(false);
         toast.success('Quote created');

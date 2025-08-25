@@ -55,28 +55,44 @@ export const appRouter = createTRPCRouter({
         },
       });
     }),
-  getQuotes: baseProcedure.query(async ({ ctx }) => {
-    if (!ctx.auth.userId) {
-      throw new TRPCError({ code: 'UNAUTHORIZED' });
-    }
+  getQuotes: baseProcedure
+    .input(
+      z
+        .object({
+          tag: z.string().optional(),
+          sort: z.enum(['newest', 'oldest']).optional(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
 
-    return prisma.quote.findMany({
-      where: {
-        createdById: ctx.auth.userId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        author: true,
-        tags: {
-          include: {
-            tag: { select: { id: true, name: true } },
+      return prisma.quote.findMany({
+        where: {
+          createdById: ctx.auth.userId,
+          ...(input?.tag
+            ? {
+                tags: {
+                  some: { tag: { name: input.tag } },
+                },
+              }
+            : {}),
+        },
+        orderBy: {
+          createdAt: input?.sort === 'oldest' ? 'asc' : 'desc',
+        },
+        include: {
+          author: true,
+          tags: {
+            include: {
+              tag: { select: { id: true, name: true } },
+            },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
   createQuote: baseProcedure
     .input(createQuoteSchema)
     .mutation(async ({ ctx, input }) => {
