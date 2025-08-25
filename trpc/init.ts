@@ -1,11 +1,12 @@
+import { auth } from '@clerk/nextjs/server';
 import { initTRPC } from '@trpc/server';
 import { cache } from 'react';
 
 export const createTRPCContext = cache(async () => {
-  return { userId: 'user_123' };
+  return { auth: await auth() };
 });
 
-const t = initTRPC.create({});
+const t = initTRPC.context<typeof createTRPCContext>().create();
 
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;

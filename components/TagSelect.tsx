@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Badge } from './ui/badge';
-import { Plus, X } from 'lucide-react';
+import { Check, Loader2, Plus, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import {
@@ -15,6 +15,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { useTRPC } from '@/trpc/client';
 import { useQuery } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
 
 interface TagSelectProps {
   value: { id?: string; name: string }[];
@@ -96,7 +97,9 @@ const TagSelect = ({
             />
             <CommandList>
               {isFetching ? (
-                <div></div>
+                <div className='flex items-center gap-2 p-3 text-sm opacity-70'>
+                  <Loader2 className='size-4 animate-spin' /> Searching...
+                </div>
               ) : (
                 <>
                   <CommandEmpty>No tags found</CommandEmpty>
@@ -110,6 +113,14 @@ const TagSelect = ({
                           }
                           className='cursor-pointer'>
                           {opt.name}
+                          <Check
+                            className={cn(
+                              'ml-auto',
+                              selectedNames.has(opt.name.toLowerCase())
+                                ? 'opacity-100'
+                                : 'opacity-0'
+                            )}
+                          />
                         </CommandItem>
                       ))}
                     </CommandGroup>
