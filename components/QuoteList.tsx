@@ -16,6 +16,8 @@ import { LayoutGrid, Quote } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Skeleton } from './ui/skeleton';
+import { cn } from '@/lib/utils';
 
 type Sort = 'newest' | 'oldest';
 
@@ -30,13 +32,15 @@ const QuoteList = () => {
     sortParam === 'newest' || sortParam === 'oldest' ? sortParam : undefined;
 
   const trpc = useTRPC();
-  const { data: quotes = [] } = useQuery(
+  const { data: quotes = [], isFetching: isQuotesFetching } = useQuery(
     trpc.getQuotes.queryOptions({
       tag,
       sort,
     })
   );
-  const { data: tags = [] } = useQuery(trpc.getTags.queryOptions());
+  const { data: tags = [], isFetching: isTagsFetching } = useQuery(
+    trpc.getTags.queryOptions()
+  );
 
   const setTag = (tagName?: string) => {
     const q = new URLSearchParams(params.toString());
@@ -55,17 +59,25 @@ const QuoteList = () => {
         <div className='flex items-center gap-4 w-full overflow-auto'>
           <button
             onClick={() => setTag(undefined)}
-            className='bg-primary text-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300'>
+            className={cn(
+              'bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
+              !tag && 'bg-primary text-white'
+            )}>
             All
           </button>
-          {tags.map((tag) => (
-            <button
-              key={tag.id}
-              onClick={() => setTag(tag.name)}
-              className='bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300'>
-              {tag.name}
-            </button>
-          ))}
+          {isTagsFetching
+            ? Array.from({ length: 6 }).map((_, i) => <TagSkeleton key={i} />)
+            : tags.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTag(t.name)}
+                  className={cn(
+                    'bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
+                    t.name === tag && 'bg-primary text-white'
+                  )}>
+                  {t.name}
+                </button>
+              ))}
         </div>
         <div className='flex items-center gap-4'>
           <Select
@@ -92,27 +104,37 @@ const QuoteList = () => {
         </div>
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {quotes.map((quote) => (
-          <div
-            key={quote.id}
-            className='relative bg-white p-6 rounded-lg hover:shadow-md cursor-pointer'>
-            <Quote className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
-            <p className='font-serif text-lg'>{quote.text}</p>
-            <p className='font-bold mt-2'>- {quote.author?.name}</p>
-            <div className='flex items-center gap-2 flex-wrap mt-4'>
-              {quote.tags.map((tag) => (
-                <div
-                  key={tag.tag.id}
-                  className='bg-primary/10 px-2 py-1 text-xs rounded-md text-primary'>
-                  {tag.tag.name}
+        {isQuotesFetching
+          ? Array.from({ length: 9 }).map((_, i) => <QuoteSkeleton key={i} />)
+          : quotes.map((quote) => (
+              <div
+                key={quote.id}
+                className='relative bg-white p-6 rounded-lg hover:shadow-md cursor-pointer'>
+                <Quote className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
+                <p className='font-serif text-lg'>{quote.text}</p>
+                <p className='font-bold mt-2'>- {quote.author?.name}</p>
+                <div className='flex items-center gap-2 flex-wrap mt-4'>
+                  {quote.tags.map((tag) => (
+                    <div
+                      key={tag.tag.id}
+                      className='bg-primary/10 px-2 py-1 text-xs rounded-md text-primary'>
+                      {tag.tag.name}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+              </div>
+            ))}
       </div>
     </div>
   );
+};
+
+const TagSkeleton = () => {
+  return <Skeleton className='h-9 w-16 bg-neutral-200' />;
+};
+
+const QuoteSkeleton = () => {
+  return <Skeleton className='h-32 w-full bg-neutral-200' />;
 };
 
 export default QuoteList;
