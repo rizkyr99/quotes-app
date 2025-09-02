@@ -11,7 +11,31 @@ const createAuthorSchema = z.object({
 const createQuoteSchema = z.object({
   text: z.string().min(1, 'Text is required'),
   authorId: z.string().nullable().optional(),
-  source: z.string().nullable().optional(),
+  source: z
+    .object({
+      type: z
+        .enum([
+          'YOUTUBE',
+          'BOOK',
+          'ARTICLE',
+          'PODCAST',
+          'SPEECH',
+          'INTERVIEW',
+          'DOCUMENTARY',
+          'WEBSITE',
+          'OTHER',
+        ])
+        .default('OTHER'),
+      title: z.string(),
+      url: z.url('Invalid URL format').optional().or(z.literal('')),
+      timestamp: z.string().optional(),
+      channel: z.string().optional(),
+      author: z.string().optional(),
+      publisher: z.string().optional(),
+      year: z.number().min(1000).max(new Date().getFullYear()).optional(),
+      isbn: z.string().optional(),
+    })
+    .optional(),
   context: z.string().nullable().optional(),
   existingTagIds: z.array(z.string()).default([]),
   newTagNames: z.array(z.string().min(1)).default([]),
@@ -90,6 +114,7 @@ export const appRouter = createTRPCRouter({
               tag: { select: { id: true, name: true } },
             },
           },
+          source: true,
         },
       });
     }),
@@ -129,6 +154,23 @@ export const appRouter = createTRPCRouter({
         new Set([...input.existingTagIds, ...created.map((t) => t.id)])
       );
 
+      const src = input.source
+        ? {
+            type: input.source.type,
+            title: input.source.title ?? null,
+            url:
+              input.source.url && input.source.url !== ''
+                ? input.source.url
+                : null,
+            timestamp: input.source.timestamp ?? null,
+            channel: input.source.channel ?? null,
+            author: input.source.author ?? null,
+            publisher: input.source.publisher ?? null,
+            year: input.source.year ?? null,
+            isbn: input.source.isbn ?? null,
+          }
+        : null;
+
       return prisma.quote.create({
         data: {
           text: input.text.trim(),
@@ -139,7 +181,7 @@ export const appRouter = createTRPCRouter({
                 },
               }
             : undefined,
-          source: input.source,
+          source: src ? { create: src } : undefined,
           tags:
             connectTagIds.length > 0
               ? {

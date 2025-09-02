@@ -11,13 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { LayoutGrid, Quote } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 
 import { useTRPC } from '@/trpc/client';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import { cn } from '@/lib/utils';
+import QuoteCard from './QuoteCard';
 
 type Sort = 'newest' | 'oldest';
 
@@ -106,24 +107,7 @@ const QuoteList = () => {
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
         {isQuotesFetching
           ? Array.from({ length: 9 }).map((_, i) => <QuoteSkeleton key={i} />)
-          : quotes.map((quote) => (
-              <div
-                key={quote.id}
-                className='relative bg-white p-6 rounded-lg hover:shadow-md cursor-pointer'>
-                <Quote className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
-                <p className='font-serif text-lg'>{quote.text}</p>
-                <p className='font-bold mt-2'>- {quote.author?.name}</p>
-                <div className='flex items-center gap-2 flex-wrap mt-4'>
-                  {quote.tags.map((tag) => (
-                    <div
-                      key={tag.tag.id}
-                      className='bg-primary/10 px-2 py-1 text-xs rounded-md text-primary'>
-                      {tag.tag.name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+          : quotes.map((quote) => <QuoteCard key={quote.id} quote={quote} />)}
       </div>
     </div>
   );
