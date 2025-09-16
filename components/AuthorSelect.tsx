@@ -9,7 +9,7 @@ import {
   CommandItem,
   CommandList,
 } from './ui/command';
-import { Check, Loader2, Plus } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/client';
@@ -81,6 +81,7 @@ const AuthorSelect = ({ value, onChange }: AuthorSelectProps) => {
           {value
             ? authors.find((author) => author.id === value)?.name
             : 'Select authors...'}
+          <ChevronsUpDown className='size-4 text-muted-foreground' />
         </Button>
       </PopoverTrigger>
       <PopoverContent align='start' className='p-0'>

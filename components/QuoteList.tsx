@@ -33,13 +33,13 @@ const QuoteList = () => {
     sortParam === 'newest' || sortParam === 'oldest' ? sortParam : undefined;
 
   const trpc = useTRPC();
-  const { data: quotes = [], isFetching: isQuotesFetching } = useQuery(
+  const { data: quotes = [], isLoading: isQuotesLoading } = useQuery(
     trpc.getQuotes.queryOptions({
       tag,
       sort,
     })
   );
-  const { data: tags = [], isFetching: isTagsFetching } = useQuery(
+  const { data: tags = [], isLoading: isTagsFetching } = useQuery(
     trpc.getTags.queryOptions()
   );
 
@@ -105,7 +105,7 @@ const QuoteList = () => {
         </div>
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {isQuotesFetching
+        {isQuotesLoading
           ? Array.from({ length: 9 }).map((_, i) => <QuoteSkeleton key={i} />)
           : quotes.map((quote) => <QuoteCard key={quote.id} quote={quote} />)}
       </div>
