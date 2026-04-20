@@ -38,9 +38,10 @@ import { formSchema } from '@/lib/schemas/quote';
 
 interface QuoteCardProps {
   quote: Quote;
+  layout?: 'grid' | 'list';
 }
 
-const QuoteCard = ({ quote }: QuoteCardProps) => {
+const QuoteCard = ({ quote, layout = 'grid' }: QuoteCardProps) => {
   const [editing, setEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const trpc = useTRPC();
@@ -122,22 +123,35 @@ const QuoteCard = ({ quote }: QuoteCardProps) => {
         if (!o) setEditing(false);
       }}>
       <DialogTrigger asChild>
-        <div
-          key={quote.id}
-          className='relative bg-card p-6 rounded-lg hover:shadow-md cursor-pointer'>
-          <QuoteIcon className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
-          <p className='font-serif text-lg'>{quote.text}</p>
-          <p className='font-bold mt-2'>- {quote.author?.name}</p>
-          <div className='flex items-center gap-2 flex-wrap mt-4'>
-            {quote.tags.map((tag) => (
-              <div
-                key={tag.tag.id}
-                className='bg-primary/10 px-2 py-1 text-xs rounded-md text-primary'>
-                {tag.tag.name}
-              </div>
-            ))}
+        {layout === 'list' ? (
+          <div className='flex items-center gap-4 bg-card px-6 py-4 rounded-lg hover:shadow-md cursor-pointer'>
+            <QuoteIcon className='shrink-0 fill-primary text-primary opacity-20 size-6' />
+            <p className='font-serif flex-1 truncate'>{quote.text}</p>
+            {quote.author?.name && (
+              <p className='text-sm text-muted-foreground shrink-0'>— {quote.author.name}</p>
+            )}
+            <div className='hidden sm:flex items-center gap-1 flex-wrap shrink-0'>
+              {quote.tags.slice(0, 3).map((tag) => (
+                <span key={tag.tag.id} className='bg-primary/10 px-2 py-0.5 text-xs rounded-md text-primary'>
+                  {tag.tag.name}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className='relative bg-card p-6 rounded-lg hover:shadow-md cursor-pointer'>
+            <QuoteIcon className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
+            <p className='font-serif text-lg'>{quote.text}</p>
+            <p className='font-bold mt-2'>- {quote.author?.name}</p>
+            <div className='flex items-center gap-2 flex-wrap mt-4'>
+              {quote.tags.map((tag) => (
+                <div key={tag.tag.id} className='bg-primary/10 px-2 py-1 text-xs rounded-md text-primary'>
+                  {tag.tag.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </DialogTrigger>
       <DialogContent className='sm:max-w-xl'>
         <DialogHeader>
