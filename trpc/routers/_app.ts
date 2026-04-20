@@ -367,6 +367,21 @@ export const appRouter = createTRPCRouter({
       return updated;
     }),
 
+  getQuoteById: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const quote = await prisma.quote.findUnique({
+        where: { id: input.id },
+        include: {
+          author: true,
+          tags: { include: { tag: { select: { id: true, name: true } } } },
+          source: true,
+        },
+      });
+      if (!quote) throw new TRPCError({ code: 'NOT_FOUND' });
+      return quote;
+    }),
+
   deleteQuote: baseProcedure
     .input(deleteQuoteSchema)
     .mutation(async ({ ctx, input }) => {

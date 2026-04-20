@@ -4,6 +4,7 @@ import {
   Pencil,
   Play,
   QuoteIcon,
+  Share2,
   Tag,
   Trash2,
   User,
@@ -167,6 +168,12 @@ const QuoteCard = ({ quote, layout = 'grid' }: QuoteCardProps) => {
                   <Pencil className='size-4' />
                   Edit
                 </Button>
+                <Link href={`/quotes/${quote.id}`} target='_blank'>
+                  <Button variant='ghost' size='sm'>
+                    <Share2 className='size-4' />
+                    Share
+                  </Button>
+                </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant='destructive' size='sm' className='ml-2'>
