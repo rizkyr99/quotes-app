@@ -1,9 +1,28 @@
+'use client';
+
 import { SignedIn, UserButton } from '@clerk/nextjs';
 import { Input } from '@/components/ui/input';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRef } from 'react';
 
 import CreateQuoteModal from './CreateQuoteModal';
 
 const Header = () => {
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSearch = (value: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const q = new URLSearchParams(params.toString());
+      if (value.trim()) q.set('search', value.trim());
+      else q.delete('search');
+      router.replace(`${pathname}?${q.toString()}`);
+    }, 300);
+  };
+
   return (
     <header className='bg-white h-16 px-4'>
       <div className='max-w-7xl flex justify-between items-center gap-2 md:gap-4 h-full mx-auto'>
@@ -14,6 +33,8 @@ const Header = () => {
           <Input
             className='bg-neutral-100 border-none hidden md:block'
             placeholder='Search quotes...'
+            defaultValue={params.get('search') ?? ''}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <div className='flex items-center gap-2 md:gap-4'>

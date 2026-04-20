@@ -16,6 +16,7 @@ import { LayoutGrid } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRef } from 'react';
 import { Skeleton } from './ui/skeleton';
 import { cn } from '@/lib/utils';
 import QuoteCard from './QuoteCard';
@@ -28,15 +29,28 @@ const QuoteList = () => {
   const router = useRouter();
   const tag = params.get('tag') || undefined;
   const sortParam = params.get('sort') || undefined;
+  const search = params.get('search') || undefined;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const sort: Sort | undefined =
     sortParam === 'newest' || sortParam === 'oldest' ? sortParam : undefined;
+
+  const handleSearch = (value: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const q = new URLSearchParams(params.toString());
+      if (value.trim()) q.set('search', value.trim());
+      else q.delete('search');
+      router.replace(`${pathname}?${q.toString()}`);
+    }, 300);
+  };
 
   const trpc = useTRPC();
   const { data: quotes = [], isLoading: isQuotesLoading } = useQuery(
     trpc.getQuotes.queryOptions({
       tag,
       sort,
+      search,
     })
   );
   const { data: tags = [], isLoading: isTagsFetching } = useQuery(
@@ -55,6 +69,8 @@ const QuoteList = () => {
       <Input
         className='block md:hidden mb-4 bg-white shadow-none text-sm w-full'
         placeholder='Search quotes...'
+        defaultValue={search ?? ''}
+        onChange={(e) => handleSearch(e.target.value)}
       />
       <div className='flex flex-col md:flex-row items-center justify-between gap-4 mb-4'>
         <div className='flex items-center gap-4 w-full overflow-auto'>
