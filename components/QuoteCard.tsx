@@ -124,7 +124,7 @@ const QuoteCard = ({ quote }: QuoteCardProps) => {
       <DialogTrigger asChild>
         <div
           key={quote.id}
-          className='relative bg-white p-6 rounded-lg hover:shadow-md cursor-pointer'>
+          className='relative bg-card p-6 rounded-lg hover:shadow-md cursor-pointer'>
           <QuoteIcon className='absolute top-2 left-2 fill-primary text-primary opacity-15 size-12' />
           <p className='font-serif text-lg'>{quote.text}</p>
           <p className='font-bold mt-2'>- {quote.author?.name}</p>
@@ -203,26 +203,26 @@ const QuoteCard = ({ quote }: QuoteCardProps) => {
               <User className='size-5 text-muted-foreground' />
               <div>
                 <span className='text-sm text-muted-foreground'>Author</span>
-                <p className='font-medium text-neutral-900'>
+                <p className='font-medium text-foreground'>
                   {quote.author?.name}
                 </p>
               </div>
             </div>
 
-            <div className='bg-neutral-50 rounded-xl p-4'>
+            <div className='bg-muted/50 rounded-xl p-4'>
               <div className='flex items-start gap-3'>
                 <div className='flex-1'>
-                  <span className='text-neutral-600 text-sm block mb-1'>
+                  <span className='text-muted-foreground text-sm block mb-1'>
                     Source
                   </span>
-                  <h3 className='font-medium text-neutral-900 mb-2'>
+                  <h3 className='font-medium text-foreground mb-2'>
                     {quote.source?.title}
                   </h3>
 
                   {quote.source?.type === 'YOUTUBE' && (
                     <>
                       {quote.source.channel && (
-                        <p className='text-sm text-neutral-600 mb-2'>
+                        <p className='text-sm text-muted-foreground mb-2'>
                           by {quote.source.channel}
                         </p>
                       )}
@@ -240,9 +240,9 @@ const QuoteCard = ({ quote }: QuoteCardProps) => {
                           </Button>
                         )}
                         {quote.source.timestamp && (
-                          <div className='flex items-center gap-1 text-sm text-neutral-600'>
+                          <div className='flex items-center gap-1 text-sm text-muted-foreground'>
                             <span>Timestamp: </span>
-                            <span className='font-mono bg-neutral-200 px-2 py-1 rounded'>
+                            <span className='font-mono bg-muted px-2 py-1 rounded'>
                               {quote.source.timestamp}
                             </span>
                           </div>
@@ -267,8 +267,8 @@ const QuoteCard = ({ quote }: QuoteCardProps) => {
             </div>
             <div>
               <div className='flex items-center gap-2 mb-3'>
-                <Tag className='size-5 text-neutral-500' />
-                <span className='text-neutral-600 text-sm'>Tags</span>
+                <Tag className='size-5 text-muted-foreground' />
+                <span className='text-muted-foreground text-sm'>Tags</span>
               </div>
               <div className='flex flex-wrap gap-2'>
                 {quote.tags.map((quoteTag) => (

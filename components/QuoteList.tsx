@@ -67,7 +67,7 @@ const QuoteList = () => {
   return (
     <div className='max-w-7xl mx-auto'>
       <Input
-        className='block md:hidden mb-4 bg-white shadow-none text-sm w-full'
+        className='block md:hidden mb-4 bg-card shadow-none text-sm w-full'
         placeholder='Search quotes...'
         defaultValue={search ?? ''}
         onChange={(e) => handleSearch(e.target.value)}
@@ -77,7 +77,7 @@ const QuoteList = () => {
           <button
             onClick={() => setTag(undefined)}
             className={cn(
-              'bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
+              'bg-card hover:bg-primary hover:text-primary-foreground px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
               !tag && 'bg-primary text-white'
             )}>
             All
@@ -89,7 +89,7 @@ const QuoteList = () => {
                   key={t.id}
                   onClick={() => setTag(t.name)}
                   className={cn(
-                    'bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
+                    'bg-card hover:bg-primary hover:text-primary-foreground px-4 py-2 rounded-md text-sm cursor-pointer transition duration-300',
                     t.name === tag && 'bg-primary text-white'
                   )}>
                   {t.name}
@@ -104,7 +104,7 @@ const QuoteList = () => {
               query.set('sort', value);
               window.location.search = query.toString();
             }}>
-            <SelectTrigger className='bg-white border-none outline-none shadow-none'>
+            <SelectTrigger className='bg-card border-none outline-none shadow-none'>
               <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent align='end'>
@@ -130,11 +130,11 @@ const QuoteList = () => {
 };
 
 const TagSkeleton = () => {
-  return <Skeleton className='h-9 w-16 bg-neutral-200' />;
+  return <Skeleton className='h-9 w-16 bg-muted' />;
 };
 
 const QuoteSkeleton = () => {
-  return <Skeleton className='h-32 w-full bg-neutral-200' />;
+  return <Skeleton className='h-32 w-full bg-muted' />;
 };
 
 export default QuoteList;

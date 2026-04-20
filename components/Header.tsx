@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 
 import CreateQuoteModal from './CreateQuoteModal';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const params = useSearchParams();
@@ -24,20 +25,21 @@ const Header = () => {
   };
 
   return (
-    <header className='bg-white h-16 px-4'>
+    <header className='bg-card h-16 px-4 border-b border-border'>
       <div className='max-w-7xl flex justify-between items-center gap-2 md:gap-4 h-full mx-auto'>
         <div className='flex items-center gap-2 md:gap-4'>
           <div className='text-2xl md:text-3xl font-black text-primary'>
             Quotes
           </div>
           <Input
-            className='bg-neutral-100 border-none hidden md:block'
+            className='bg-muted border-none hidden md:block'
             placeholder='Search quotes...'
             defaultValue={params.get('search') ?? ''}
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <div className='flex items-center gap-2 md:gap-4'>
+          <ThemeToggle />
           <CreateQuoteModal />
           <SignedIn>
             <UserButton />
