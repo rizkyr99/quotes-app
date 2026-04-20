@@ -121,6 +121,7 @@ export const appRouter = createTRPCRouter({
         .object({
           tag: z.string().optional(),
           sort: z.enum(['newest', 'oldest']).optional(),
+          search: z.string().optional(),
         })
         .optional()
     )
@@ -128,6 +129,8 @@ export const appRouter = createTRPCRouter({
       if (!ctx.auth.userId) {
         throw new TRPCError({ code: 'UNAUTHORIZED' });
       }
+
+      const search = input?.search?.trim();
 
       return prisma.quote.findMany({
         where: {
@@ -137,6 +140,15 @@ export const appRouter = createTRPCRouter({
                 tags: {
                   some: { tag: { name: input.tag } },
                 },
+              }
+            : {}),
+          ...(search
+            ? {
+                OR: [
+                  { text: { contains: search, mode: 'insensitive' } },
+                  { author: { name: { contains: search, mode: 'insensitive' } } },
+                  { source: { title: { contains: search, mode: 'insensitive' } } },
+                ],
               }
             : {}),
         },
@@ -353,6 +365,21 @@ export const appRouter = createTRPCRouter({
       });
 
       return updated;
+    }),
+
+  getQuoteById: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const quote = await prisma.quote.findUnique({
+        where: { id: input.id },
+        include: {
+          author: true,
+          tags: { include: { tag: { select: { id: true, name: true } } } },
+          source: true,
+        },
+      });
+      if (!quote) throw new TRPCError({ code: 'NOT_FOUND' });
+      return quote;
     }),
 
   deleteQuote: baseProcedure
